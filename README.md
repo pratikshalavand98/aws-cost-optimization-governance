@@ -52,54 +52,9 @@ Management requested an automated solution that monitors AWS costs and removes u
 ---
 
 # Architecture
-
-```text
-                        +----------------------+
-                        |     AWS Budget       |
-                        | Monthly Cost Budget  |
-                        +----------+-----------+
-                                   |
-                     80% / 100% Budget Alert
-                                   |
-                                   v
-                        +----------------------+
-                        |      Amazon SNS      |
-                        |   Email Notification |
-                        +----------+-----------+
-                                   |
-
-=================================================================
-
-                    +------------------------------+
-                    | EventBridge Scheduler        |
-                    | Runs Every 1 Hour            |
-                    +--------------+---------------+
-                                   |
-                                   v
-                    +------------------------------+
-                    | AWS Lambda                   |
-                    | CostOptimizationCleanup      |
-                    +--------------+---------------+
-                                   |
-        +--------------------------+--------------------------+
-        |                          |                          |
-        v                          v                          v
-+---------------+          +----------------+         +------------------+
-| Stopped EC2   |          | Unattached EBS |         | Unused Elastic IP|
-+---------------+          +----------------+         +------------------+
-        |                          |                          |
-        |                    Delete Volume              Release IP
-        +--------------------------+--------------------------+
-                                   |
-                                   v
-                    +------------------------------+
-                    | Amazon CloudWatch Logs       |
-                    | Cleanup & Execution Logs     |
-                    +------------------------------+
-```
+![Architecture Diagram](screenshot/architecture.png)
 
 ---
-
 # Project Workflow
 
 ## Step 1 – Create IAM Role
@@ -116,6 +71,8 @@ Attached Policies:
 
 - AmazonEC2FullAccess
 - CloudWatchLogsFullAccess
+  
+![Step 1](screenshot/step1-iam-role.png)
 
 ---
 
@@ -131,11 +88,15 @@ Cost-Optimization-Alerts
 
 Subscribed email address for receiving alerts.
 
+![Step 2](screenshot/step2-sns-topic.png)
+
 ---
 
 ## Step 3 – Configure Email Subscription
 
 Verified the email subscription successfully.
+
+![Step 3](screenshot/step3-email-subscription.png)
 
 ---
 
@@ -160,6 +121,8 @@ Configured Budget Alerts:
 - 80%
 - 100%
 
+![Step 4](screenshot/step4-aws-budget.png)
+
 ---
 
 ## Step 5 – Create Test Resources
@@ -167,10 +130,14 @@ Configured Budget Alerts:
 Created:
 
 - EC2 Instance
+  ![Step 5 EC2](screenshot/step5-ec2-instance.png)
 - Additional EBS Volume
+  ![Step 5 EBS](screenshot/step5-ebs-volume.png)
 - Elastic IP
+![Step 5 Elastic IP](screenshot/step5-elastic-ip.png)
 
 These resources were used to test automated cleanup.
+
 
 ---
 
@@ -195,6 +162,7 @@ Execution Role:
 ```
 Lambda-CostOptimization-Role
 ```
+![Step 6](screenshot/step6-lambda-created.png)
 
 ---
 
@@ -208,6 +176,7 @@ Implemented Python (boto3) code to:
 - Detect unused Elastic IP addresses
 - Release unused Elastic IP addresses
 - Generate CloudWatch logs
+![Step 7](screenshot/step7-lambda-code.png)
 
 ---
 
@@ -220,6 +189,8 @@ Detected:
 - Stopped EC2 Instance
 
 Generated execution logs successfully.
+
+![Step 8](screenshot/step8-lambda-test.png)
 
 ---
 
@@ -244,6 +215,7 @@ Target:
 ```
 AWS Lambda
 ```
+![Step 9](screenshot/step9-eventbridge-scheduler.png)
 
 ---
 
@@ -254,6 +226,8 @@ Verified:
 - Lambda Execution
 - Cleanup Logs
 - Execution Report
+
+![Step 10](screenshot/step10-cloudwatch-logs.png)
 
 ---
 
