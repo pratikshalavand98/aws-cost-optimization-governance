@@ -337,6 +337,6 @@ aws-cost-optimization-governance/
 
 # Author
 
-**Aditya More**
+**Pratiksha Lavand**
 
 AWS & DevOps Engineer
